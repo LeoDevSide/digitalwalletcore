@@ -1,5 +1,6 @@
 import { validateSync, IsEmail, MinLength } from 'class-validator'
 import { randomUUID } from 'crypto'
+import { Account } from './account.entity'
 
 export interface ClientProps {
   name: string
@@ -16,6 +17,7 @@ export class Client {
   private _id: string
   private _createdAt: Date
   private _updatedAt?: Date
+  private _accounts: Account[] = []
 
   constructor(props: ClientProps, id?: string, createdAt?: Date) {
     this._id = id ?? randomUUID()
@@ -44,6 +46,17 @@ export class Client {
     this._updatedAt = new Date()
 
     this.validate()
+  }
+
+  public addAccount(account: Account): void {
+    if (account.client.id !== this.id) {
+      throw new Error('Already have a client')
+    }
+    this._accounts.push(account)
+  }
+
+  get accounts() {
+    return this._accounts
   }
 
   get name() {
