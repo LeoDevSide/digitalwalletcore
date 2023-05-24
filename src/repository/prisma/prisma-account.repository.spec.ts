@@ -51,4 +51,9 @@ describe('Prisma Client Repository Integration test', () => {
     const accountDb = await accountRepository.findById(account.id)
     expect(accountDb?.balance).toEqual(1000)
   })
+
+  it('should return null if findById an inexistent account', async () => {
+    const accountDb = await accountRepository.findById('2')
+    expect(accountDb).toEqual(null)
+  })
 })
