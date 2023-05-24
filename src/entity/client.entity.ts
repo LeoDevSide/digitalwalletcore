@@ -5,6 +5,7 @@ import { Account } from './account.entity'
 export interface ClientProps {
   name: string
   email: string
+  accounts?: Account[]
 }
 
 export class Client {
@@ -23,6 +24,7 @@ export class Client {
     this._id = id ?? randomUUID()
     this._name = props.name
     this._email = props.email
+    this._accounts = props.accounts ?? []
     this._createdAt = createdAt ?? new Date()
     this.validate()
   }
