@@ -69,4 +69,8 @@ export class Account {
   get balance() {
     return this._balance
   }
+
+  set updatedAt(date: Date) {
+    this._updatedAt = date
+  }
 }
