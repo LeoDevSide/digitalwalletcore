@@ -7,7 +7,9 @@
     "test": "vitest",
     "test:repo": "vitest run --dir src/repository",
     "pretest:repo": "npm link ./prisma/vitest-environment-prisma && npm link vitest-environment-prisma",
-    "test:e2e:repo": "vitest --dir src/repository"
+    "test:e2e:repo": "vitest --dir src/repository",
+    "start:dev": "tsx watch src/server.ts"
+
   },
   "keywords": [],
   "author": "",

@@ -9,10 +9,10 @@ export class CreateClientUseCase {
   constructor(private clientRepository: IClientRepository) {}
 
   async execute(input: CreateClientUseCaseInputDto): Promise<void> {
-    const checkIfEmailAlreadyExists = await this.clientRepository.findByEmail(
+    const emailAlreadyExists = await this.clientRepository.findByEmail(
       input.client.email,
     )
-    if (checkIfEmailAlreadyExists) {
+    if (emailAlreadyExists) {
       throw new Error('Email already exists')
     }
     const client = new Client(input.client)
