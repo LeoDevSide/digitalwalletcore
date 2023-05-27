@@ -4,17 +4,25 @@ import { Client } from '../entity/client.entity'
 import { InMemoryAccountRepository } from '../../test/in-memory-repository/in-memory-account.repository'
 import { InMemoryTransactionRepository } from '../../test/in-memory-repository/in-memory-transaction.repository'
 import { Account } from '../entity/account.entity'
+import { EventDispatcher } from '../utils/events/event-dispatcher'
+import { TransactionCreatedEvent } from '../event/transaction-created.event'
 
 let inMemoryTransactionRepository: InMemoryTransactionRepository
 let inMemoryAccountRepository: InMemoryAccountRepository
 let useCase: CreateTransactionUseCase
+let eventDispatcher: EventDispatcher
+let event: TransactionCreatedEvent
 describe('Create transaction usecase unit test', () => {
   beforeEach(() => {
     inMemoryTransactionRepository = new InMemoryTransactionRepository()
     inMemoryAccountRepository = new InMemoryAccountRepository()
+    eventDispatcher = new EventDispatcher()
+    event = new TransactionCreatedEvent()
     useCase = new CreateTransactionUseCase(
       inMemoryAccountRepository,
       inMemoryTransactionRepository,
+      eventDispatcher,
+      event,
     )
   })
   it('should be able to create a new transaction', async () => {

@@ -1,7 +1,7 @@
 import { IEvent, IEventDispatcher, IEventHandler } from './interfaces'
 
 export class Event implements IEvent {
-  public name: string
+  name: string
   date: Date
   payload: any
   constructor(name: string, payload: any) {
