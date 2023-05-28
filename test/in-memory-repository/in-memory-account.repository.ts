@@ -25,4 +25,14 @@ export class InMemoryAccountRepository implements IAccountRepository {
       throw new Error('O accounte não existe.')
     }
   }
+
+  async updateBalance(account: Account): Promise<void> {
+    const index = this.items.findIndex((item) => item.id === account.id)
+
+    if (index !== -1) {
+      this.items[index] = account
+    } else {
+      throw new Error('O accounte não existe.')
+    }
+  }
 }

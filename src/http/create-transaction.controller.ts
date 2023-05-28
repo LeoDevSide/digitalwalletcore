@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { PrismaAccountRepository } from '../repository/prisma/prisma-account.repository'
 import { CreateTransactionUseCase } from '../usecase/create-transaction.usecase'
-import { InMemoryTransactionRepository } from '../../test/in-memory-repository/in-memory-transaction.repository'
 import { TransactionCreatedEvent } from '../event/transaction-created.event'
 import { EventDispatcher } from '../utils/events/event-dispatcher'
+import { PrismaTransactionRepository } from '../repository/prisma/prisma-transaction.repository'
 type bodySchema = {
   accountIdFrom: string
   accountIdTo: string
@@ -16,7 +16,7 @@ export async function createTransaction(
   const { accountIdFrom, accountIdTo, amount }: bodySchema = request.body
 
   const accountRepository = new PrismaAccountRepository()
-  const transactionRepository = new InMemoryTransactionRepository()
+  const transactionRepository = new PrismaTransactionRepository()
   const event = new TransactionCreatedEvent()
   const eventDispatcher = new EventDispatcher()
 

@@ -52,6 +52,20 @@ describe('Prisma Client Repository Integration test', () => {
     expect(accountDb?.balance).toEqual(1000)
   })
 
+  it('should be able to update balance', async () => {
+    const client = new Client({
+      name: 'John dooe',
+      email: 'johnexample222@gmail.com',
+    })
+    const account = new Account({ client })
+    await clientRepository.create(client)
+    await accountRepository.create(account)
+    account.credit(1000)
+    await accountRepository.updateBalance(account)
+    const accountDb = await accountRepository.findById(account.id)
+    expect(accountDb?.balance).toEqual(1000)
+  })
+
   it('should return null if findById an inexistent account', async () => {
     const accountDb = await accountRepository.findById('2')
     expect(accountDb).toEqual(null)

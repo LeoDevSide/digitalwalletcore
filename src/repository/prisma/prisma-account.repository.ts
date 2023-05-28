@@ -59,4 +59,18 @@ export class PrismaAccountRepository implements IAccountRepository {
       where: { id: account.id },
     })
   }
+
+  async updateBalance(account: Account): Promise<void> {
+    const isExistentAccount = await prisma.account.findUnique({
+      where: { id: account.id },
+    })
+    if (!isExistentAccount) throw new Error('Account not found')
+
+    await prisma.account.update({
+      data: {
+        balance: account.balance,
+      },
+      where: { id: account.id },
+    })
+  }
 }
