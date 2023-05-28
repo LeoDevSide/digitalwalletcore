@@ -61,4 +61,16 @@ export class Transaction {
   get updatedAt() {
     return this._createdAt
   }
+
+  get amount() {
+    return this._amount
+  }
+
+  get accountFrom() {
+    return this._accountFrom
+  }
+
+  get accountTo() {
+    return this._accountTo
+  }
 }
