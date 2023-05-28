@@ -4,6 +4,7 @@ import { CreateTransactionUseCase } from '../usecase/create-transaction.usecase'
 import { TransactionCreatedEvent } from '../event/transaction-created.event'
 import { EventDispatcher } from '../utils/events/event-dispatcher'
 import { PrismaTransactionRepository } from '../repository/prisma/prisma-transaction.repository'
+
 type bodySchema = {
   accountIdFrom: string
   accountIdTo: string
@@ -19,15 +20,14 @@ export async function createTransaction(
   const transactionRepository = new PrismaTransactionRepository()
   const event = new TransactionCreatedEvent()
   const eventDispatcher = new EventDispatcher()
-
-  const authUseCase = new CreateTransactionUseCase(
+  const createTransactionUsecase = new CreateTransactionUseCase(
     accountRepository,
     transactionRepository,
     eventDispatcher,
     event,
   )
 
-  const output = await authUseCase.execute({
+  const output = await createTransactionUsecase.execute({
     accountIdFrom,
     accountIdTo,
     amount,

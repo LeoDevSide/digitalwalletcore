@@ -34,6 +34,9 @@ export class CreateTransactionUseCase {
       accountTo: to,
       amount: input.amount,
     })
+
+    await this.accountRepository.updateBalance(from)
+    await this.accountRepository.updateBalance(to)
     await this.transactionRepository.create(transaction)
 
     const transactionId = transaction.id
