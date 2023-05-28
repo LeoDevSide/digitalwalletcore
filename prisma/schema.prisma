@@ -21,24 +21,27 @@ model Client {
 }
 
 model Account {
-  id         String   @id @default(uuid())
-  balance    Float
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-  client     Client   @relation(fields: [client_id], references: [id])
-  client_id  String
+  id               String        @id @default(uuid())
+  balance          Float
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @default(now())
+  client           Client        @relation(fields: [client_id], references: [id])
+  client_id        String
+  transactionsFrom Transaction[] @relation("from")
+  transactionsTo   Transaction[] @relation("to")
+
   // 
 
   @@map("accounts")
 }
 
-// model Transaction {
-//   id              String  @id @default(uuid())
-//   amount          Float
-//   accountFrom     Account @relation(name: "from", fields: [account_from_id], references: [id])
-//   account_from_id String
-//   accountTo       Account @relation(name: "to", fields: [account_to_id], references: [id])
-//   account_to_id   String
+model Transaction {
+  id              String  @id @default(uuid())
+  amount          Float
+  accountFrom     Account @relation(name: "from", fields: [account_from_id], references: [id])
+  account_from_id String
+  accountTo       Account @relation(name: "to", fields: [account_to_id], references: [id])
+  account_to_id   String
 
-//   @@map("transactions")
-// }
+  @@map("transactions")
+}
