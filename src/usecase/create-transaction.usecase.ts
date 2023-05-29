@@ -1,4 +1,5 @@
 import { Transaction } from '../entity/transaction.entity'
+import { prisma } from '../lib/prisma'
 import { IAccountRepository } from '../repository/account.repository'
 import { ITransactionRepository } from '../repository/transaction.repository'
 import { IEvent, IEventDispatcher } from '../utils/events/interfaces'
@@ -26,7 +27,6 @@ export class CreateTransactionUseCase {
   ): Promise<CreateTransactionUseCaseOutputDto> {
     const from = await this.accountRepository.findById(input.accountIdFrom)
     const to = await this.accountRepository.findById(input.accountIdTo)
-
     if (!from || !to) throw new Error('Account not found')
 
     const transaction = new Transaction({
@@ -34,16 +34,15 @@ export class CreateTransactionUseCase {
       accountTo: to,
       amount: input.amount,
     })
-
-    await this.accountRepository.updateBalance(from)
-    await this.accountRepository.updateBalance(to)
-    await this.transactionRepository.create(transaction)
-
+    await prisma.$transaction(async (tx) => {
+      await this.accountRepository.updateBalance(from, tx)
+      await this.accountRepository.updateBalance(to, tx)
+      await this.transactionRepository.create(transaction, tx)
+    })
     const transactionId = transaction.id
 
     this.transactionCreated.payload = transactionId
     this.eventDispatcher.dispatch(this.transactionCreated)
-
     return { transactionId }
   }
 }

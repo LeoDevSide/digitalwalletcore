@@ -2,6 +2,7 @@ import { IAccountRepository } from '../account.repository'
 import { Account } from '../../entity/account.entity'
 import { prisma } from '../../lib/prisma'
 import { Client } from '../../entity/client.entity'
+import { PrismaClient } from '@prisma/client'
 
 export class PrismaAccountRepository implements IAccountRepository {
   async findById(id: string): Promise<Account | null> {
@@ -60,13 +61,20 @@ export class PrismaAccountRepository implements IAccountRepository {
     })
   }
 
-  async updateBalance(account: Account): Promise<void> {
-    const isExistentAccount = await prisma.account.findUnique({
+  async updateBalance(
+    account: Account,
+    tx?: Omit<
+      PrismaClient,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
+    >,
+  ) {
+    if (!tx) tx = prisma
+    const isExistentAccount = await tx.account.findUnique({
       where: { id: account.id },
     })
     if (!isExistentAccount) throw new Error('Account not found')
 
-    await prisma.account.update({
+    await tx.account.update({
       data: {
         balance: account.balance,
       },

@@ -1,5 +1,7 @@
 import { ITransactionRepository } from '../transaction.repository'
 import { Transaction } from '../../entity/transaction.entity'
+// import { prisma } from '../../lib/prisma'
+import { PrismaClient } from '@prisma/client'
 import { prisma } from '../../lib/prisma'
 // import { Client } from '../../entity/client.entity'
 // import { Account } from '../../entity/account.entity'
@@ -27,17 +29,15 @@ export class PrismaTransactionRepository implements ITransactionRepository {
   //   return transactionDb
   // }
 
-  async create(transaction: Transaction): Promise<void> {
-    // const transactionEntity = new Transaction(
-    //   {
-    //     accountFrom: transaction.accountFrom,
-    //     accountTo: transaction.accountTo,
-    //     amount: transaction.amount,
-    //   },
-    //   transaction.id,
-    //   transaction.createdAt,
-    // )
-    await prisma.transaction.create({
+  async create(
+    transaction: Transaction,
+    tx?: Omit<
+      PrismaClient,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
+    >,
+  ) {
+    if (!tx) tx = prisma
+    await tx.transaction.create({
       data: {
         amount: transaction.amount,
         account_from_id: transaction.accountFrom.id,
