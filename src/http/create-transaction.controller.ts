@@ -33,5 +33,5 @@ export async function createTransaction(
     amount,
   })
 
-  return reply.status(200).send(output)
+  return reply.status(201).send(output)
 }

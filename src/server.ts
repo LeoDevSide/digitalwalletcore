@@ -1,7 +1,4 @@
 import { app } from './app'
-import { appRoutes } from './http/routes'
-
-app.register(appRoutes)
 
 app
   .listen({

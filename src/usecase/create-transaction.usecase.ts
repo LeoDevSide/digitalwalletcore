@@ -12,6 +12,9 @@ type CreateTransactionUseCaseInputDto = {
 
 type CreateTransactionUseCaseOutputDto = {
   transactionId: string
+  accountIdFrom: string
+  accountIdTo: string
+  aomunt: number
 }
 
 export class CreateTransactionUseCase {
@@ -34,15 +37,21 @@ export class CreateTransactionUseCase {
       accountTo: to,
       amount: input.amount,
     })
+    // TODO: remove prisma dependency
     await prisma.$transaction(async (tx) => {
       await this.accountRepository.updateBalance(from, tx)
       await this.accountRepository.updateBalance(to, tx)
       await this.transactionRepository.create(transaction, tx)
     })
-    const transactionId = transaction.id
-
-    this.transactionCreated.payload = transactionId
+    const output = {
+      transactionId: transaction.id,
+      accountIdFrom: transaction.accountFrom.id,
+      accountIdTo: transaction.accountTo.id,
+      aomunt: transaction.amount,
+    }
+    this.transactionCreated.payload = output
     this.eventDispatcher.dispatch(this.transactionCreated)
-    return { transactionId }
+
+    return output
   }
 }
