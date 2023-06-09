@@ -22,9 +22,6 @@ describe('Create client usecase unit test', () => {
     expect(inMemoryRepository.items[0].name).toEqual('John doe')
     expect(inMemoryRepository.items[0].createdAt).toBeDefined()
     expect(inMemoryRepository.items[0].id).toBeDefined()
-
-    // Verifica se o método create foi chamado com o cliente correto
-    // expect(findByIdSpy).toHaveBeenCalled()
   })
 
   it('should NOT be able to create client with existent email', async () => {

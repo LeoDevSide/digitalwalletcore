@@ -27,7 +27,7 @@ export class EventDispatcher implements IEventDispatcher {
   dispatch(event: IEvent): void {
     const eventHandlers = this.handlers[event.name]
     if (eventHandlers) {
-      eventHandlers.forEach((handler) => handler.handle(event))
+      eventHandlers.forEach(async (handler) => await handler.handle(event))
     }
   }
 
@@ -54,5 +54,5 @@ export class EventDispatcher implements IEventDispatcher {
 export class EventHandler implements IEventHandler {
   constructor() {}
 
-  handle(event: IEvent): void {}
+  async handle(event: IEvent): Promise<void> {}
 }

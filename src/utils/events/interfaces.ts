@@ -5,7 +5,7 @@ export interface IEvent {
 }
 
 export interface IEventHandler {
-  handle(event: IEvent): void
+  handle(event: IEvent): Promise<void>
 }
 
 export interface IEventDispatcher {
