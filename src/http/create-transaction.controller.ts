@@ -4,6 +4,10 @@ import { CreateTransactionUseCase } from '../usecase/create-transaction.usecase'
 import { TransactionCreatedEvent } from '../event/transaction-created.event'
 import { EventDispatcher } from '../utils/events/event-dispatcher'
 import { PrismaTransactionRepository } from '../repository/prisma/prisma-transaction.repository'
+import { TransactionCreatedKafkaHandler } from '../event/handler/transaction-created-kafka.handler'
+import { kafkaProducer } from '../lib/kafka'
+import { BalanceUpdatedEvent } from '../event/balance-updated.event'
+import { UpdateBalanceKafkaHandler } from '../event/handler/balance-updated-kafka.handler'
 
 type bodySchema = {
   accountIdFrom: string
@@ -18,13 +22,22 @@ export async function createTransaction(
 
   const accountRepository = new PrismaAccountRepository()
   const transactionRepository = new PrismaTransactionRepository()
-  const event = new TransactionCreatedEvent()
+  const transactionCreatedEvent = new TransactionCreatedEvent()
+  const balanceUpdatedEvent = new BalanceUpdatedEvent()
+  const balanceUpdatedHandler = new UpdateBalanceKafkaHandler(kafkaProducer)
   const eventDispatcher = new EventDispatcher()
+  const transactionCreatedHandler = new TransactionCreatedKafkaHandler(
+    kafkaProducer,
+  )
+  eventDispatcher.register('TransactionCreated', transactionCreatedHandler)
+  eventDispatcher.register('BalanceUpdated', balanceUpdatedHandler)
+
   const createTransactionUsecase = new CreateTransactionUseCase(
     accountRepository,
     transactionRepository,
     eventDispatcher,
-    event,
+    transactionCreatedEvent,
+    balanceUpdatedEvent,
   )
 
   const output = await createTransactionUsecase.execute({

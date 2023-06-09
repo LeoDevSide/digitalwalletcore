@@ -10,7 +10,14 @@ type CreateTransactionUseCaseInputDto = {
   amount: number
 }
 
-type CreateTransactionUseCaseOutputDto = {
+type BalanceUpdatedOutputDto = {
+  balanceAccountFrom: number
+  balanceAccountTo: number
+  accountIdFrom: string
+  accountIdTo: string
+}
+
+type CreateTransactionOutputDto = {
   transactionId: string
   accountIdFrom: string
   accountIdTo: string
@@ -23,11 +30,12 @@ export class CreateTransactionUseCase {
     private transactionRepository: ITransactionRepository,
     private eventDispatcher: IEventDispatcher,
     private transactionCreated: IEvent,
+    private balanceUpdated: IEvent,
   ) {}
 
   async execute(
     input: CreateTransactionUseCaseInputDto,
-  ): Promise<CreateTransactionUseCaseOutputDto> {
+  ): Promise<CreateTransactionOutputDto> {
     const from = await this.accountRepository.findById(input.accountIdFrom)
     const to = await this.accountRepository.findById(input.accountIdTo)
     if (!from || !to) throw new Error('Account not found')
@@ -43,15 +51,24 @@ export class CreateTransactionUseCase {
       await this.accountRepository.updateBalance(to, tx)
       await this.transactionRepository.create(transaction, tx)
     })
-    const output = {
+    const transactionDto: CreateTransactionOutputDto = {
       transactionId: transaction.id,
       accountIdFrom: transaction.accountFrom.id,
       accountIdTo: transaction.accountTo.id,
       aomunt: transaction.amount,
     }
-    this.transactionCreated.payload = output
-    this.eventDispatcher.dispatch(this.transactionCreated)
+    const balanceDto: BalanceUpdatedOutputDto = {
+      balanceAccountFrom: from.balance,
+      balanceAccountTo: to.balance,
+      accountIdFrom: input.accountIdFrom,
+      accountIdTo: input.accountIdTo,
+    }
 
-    return output
+    this.transactionCreated.payload = transactionDto
+    this.balanceUpdated.payload = balanceDto
+
+    this.eventDispatcher.dispatch(this.transactionCreated)
+    this.eventDispatcher.dispatch(this.balanceUpdated)
+    return transactionDto
   }
 }
